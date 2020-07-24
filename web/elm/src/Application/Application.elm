@@ -62,7 +62,12 @@ init flags url =
     let
         route =
             Routes.parsePath url
-                |> Maybe.withDefault (Routes.Dashboard (Routes.Normal Nothing))
+                |> Maybe.withDefault
+                    (Routes.Dashboard
+                        { searchType = Routes.Normal ""
+                        , dashboardView = Routes.ViewNonArchivedPipelines
+                        }
+                    )
 
         session =
             { userState = UserStateUnknown
@@ -74,7 +79,8 @@ init flags url =
             , csrfToken = flags.csrfToken
             , authToken = flags.authToken
             , pipelineRunningKeyframes = flags.pipelineRunningKeyframes
-            , expandedTeams = Set.empty
+            , expandedTeamsInAllPipelines = Set.empty
+            , collapsedTeamsInFavorites = Set.empty
             , pipelines = RemoteData.NotAsked
             , sideBarState =
                 { isOpen = False
@@ -83,6 +89,7 @@ init flags url =
             , draggingSideBar = False
             , screenSize = ScreenSize.Desktop
             , timeZone = Time.utc
+            , favoritedPipelines = Set.empty
             }
 
         ( subModel, subEffects ) =
@@ -106,7 +113,12 @@ init flags url =
                 ]
     in
     ( model
-    , [ FetchUser, GetScreenSize, LoadSideBarState, FetchClusterInfo ]
+    , [ FetchUser
+      , GetScreenSize
+      , LoadSideBarState
+      , LoadFavoritedPipelines
+      , FetchClusterInfo
+      ]
         ++ handleTokenEffect
         ++ subEffects
     )
@@ -467,6 +479,7 @@ subscriptions model =
     [ OnNonHrefLinkClicked
     , OnTokenReceived
     , OnSideBarStateReceived
+    , OnFavoritedPipelinesReceived
     , OnWindowResize
     ]
         ++ (if model.session.draggingSideBar then

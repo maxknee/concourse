@@ -1,12 +1,14 @@
 module Message.Message exposing
     ( DomID(..)
+    , DropTarget(..)
     , Message(..)
+    , SideBarSection(..)
     , VersionId
     , VersionToggleAction(..)
     , VisibilityAction(..)
     )
 
-import Concourse
+import Concourse exposing (DatabaseID)
 import Concourse.Cli as Cli
 import Concourse.Pagination exposing (Page)
 import Routes exposing (StepID)
@@ -22,8 +24,8 @@ type Message
     | ToggleGroup Concourse.PipelineGroup
     | SetGroups (List String)
       -- Dashboard
-    | DragStart String Int
-    | DragOver String Int
+    | DragStart String String
+    | DragOver DropTarget
     | DragEnd
     | Tooltip String String
     | TooltipHd String String
@@ -67,6 +69,7 @@ type DomID
     | WelcomeCardCliIcon Cli.Cli
     | CopyTokenButton
     | SendTokenButton
+    | CopyTokenInput
     | JobGroup Int
     | StepTab String Int
     | StepHeader String
@@ -83,10 +86,16 @@ type DomID
     | JobPreview Concourse.JobIdentifier
     | HamburgerMenu
     | SideBarResizeHandle
-    | SideBarTeam String
-    | SideBarPipeline Concourse.PipelineIdentifier
+    | SideBarTeam SideBarSection String
+    | SideBarPipeline SideBarSection Concourse.PipelineIdentifier
+    | SideBarStarIcon DatabaseID
     | Dashboard
     | DashboardGroup String
+
+
+type SideBarSection
+    = Favorites
+    | AllPipelines
 
 
 type VersionToggleAction
@@ -101,3 +110,8 @@ type VisibilityAction
 
 type alias VersionId =
     Concourse.VersionedResourceIdentifier
+
+
+type DropTarget
+    = Before String
+    | After String

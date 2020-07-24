@@ -16,7 +16,7 @@ type Asset
     = CliIcon Cli
     | ChevronLeft
     | ChevronRight
-    | HighDensityIcon Bool
+    | ToggleSwitch Bool
     | VisibilityToggleIcon Bool
     | BuildFavicon (Maybe BuildStatus)
     | PinIconWhite
@@ -54,6 +54,8 @@ type Asset
     | PencilIcon
     | SearchIcon
     | CloseIcon
+    | StarIconUnfilled
+    | StarIconFilled
 
 
 type ComponentType
@@ -112,7 +114,7 @@ toPath asset =
         ChevronRight ->
             basePath ++ [ "baseline-chevron-right.svg" ]
 
-        HighDensityIcon on ->
+        ToggleSwitch on ->
             let
                 imageName =
                     if on then
@@ -121,7 +123,7 @@ toPath asset =
                     else
                         "off"
             in
-            basePath ++ [ "ic-hd-" ++ imageName ++ ".svg" ]
+            basePath ++ [ "ic-toggle-" ++ imageName ++ ".svg" ]
 
         VisibilityToggleIcon visible ->
             let
@@ -156,6 +158,12 @@ toPath asset =
 
         PencilIcon ->
             basePath ++ [ "pencil-white.svg" ]
+
+        StarIconUnfilled ->
+            basePath ++ [ "star-unfilled.svg" ]
+
+        StarIconFilled ->
+            basePath ++ [ "star-filled.svg" ]
 
         CheckmarkIcon ->
             basePath ++ [ "checkmark-ic.svg" ]
